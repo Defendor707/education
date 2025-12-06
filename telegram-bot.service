@@ -1,0 +1,20 @@
+[Unit]
+Description=Education Platform Telegram Bot
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/proj/education/telegram-bot
+Environment="NODE_ENV=production"
+Environment="TELEGRAM_BOT_TOKEN=7552111773:AAGxv82bROMss57jnzd5NOoCqwIwqjZl4ac"
+Environment="API_URL=http://localhost:8000/api"
+ExecStart=/usr/bin/node /home/ubuntu/proj/education/telegram-bot/src/index.js
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+
