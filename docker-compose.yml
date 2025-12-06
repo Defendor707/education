@@ -37,38 +37,44 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: education_frontend
     ports:
-      - "3000:3000"
+      - "5000:5000"
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:8000/api
+      PORT: 5000
     depends_on:
       - backend
     volumes:
       - ./frontend:/app
       - /app/node_modules
+      - /app/.next
     networks:
       - education_network
+    command: npm run dev
 
   # Telegram Bot
   telegram-bot:
     build:
       context: ./telegram-bot
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: education_telegram_bot
     environment:
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-7552111773:AAGxv82bROMss57jnzd5NOoCqwIwqjZl4ac}
       API_URL: http://backend:8000/api
       BOT_NAME: Education Bot
       LOG_LEVEL: info
+      NODE_ENV: development
     depends_on:
       - backend
     networks:
       - education_network
     restart: unless-stopped
     volumes:
+      - ./telegram-bot:/app
       - ./telegram-bot/logs:/app/logs
+      - /app/node_modules
 
 volumes:
   postgres_data:

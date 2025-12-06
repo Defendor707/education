@@ -5,132 +5,182 @@
 7552111773:AAGxv82bROMss57jnzd5NOoCqwIwqjZl4ac
 ```
 
-## Tez Ishga Tushirish
+## ⚡ Tez Ishga Tushirish
 
-### 1️⃣ Docker Compose (Eng Oson)
+### 1️⃣ Barcha Servislarni Birga (Tavsiya)
+
+```bash
+cd /home/ubuntu/proj/education
+./scripts/start-all.sh
+```
+
+Bu quyidagilarni ishga tushiradi:
+- Backend API (port 8000)
+- Frontend (port 5000)
+- Telegram Bot holatini tekshiradi
+
+### 2️⃣ Docker Compose (Eng Oson)
 
 ```bash
 cd /home/ubuntu/proj/education
 
-# Barcha servislarni ishga tushirish (Database, Backend, Frontend, Telegram Bot)
+# Barcha servislarni ishga tushirish
 docker-compose up -d
 
 # Status tekshirish
 docker-compose ps
 
 # Log'larni ko'rish
-docker-compose logs -f telegram-bot
+docker-compose logs -f
+
+# Faqat frontend
+docker-compose up frontend
+
+# Faqat telegram-bot
+docker-compose up telegram-bot
 ```
 
-### 2️⃣ Telegram Botni Alohida Ishga Tushirish
+### 3️⃣ Alohida Ishga Tushirish
 
+#### Frontend (Port 5000)
 ```bash
-cd /home/ubuntu/proj/education/telegram-bot
-
-# Dependencies o'rnatish (birinchi marta)
+cd /home/ubuntu/proj/education/frontend
 npm install
-
-# Botni ishga tushirish
-npm start
-
-# Yoki development mode (auto-reload)
 npm run dev
+# http://localhost:5000
 ```
 
-### 3️⃣ Systemd Service (Production)
-
+#### Backend API
 ```bash
-# Service faylini ko'chirish
-sudo cp /home/ubuntu/proj/education/telegram-bot.service /etc/systemd/system/
-
-# Service'ni qayta yuklash
-sudo systemctl daemon-reload
-
-# Service'ni ishga tushirish
-sudo systemctl start telegram-bot
-
-# Avtomatik ishga tushirish
-sudo systemctl enable telegram-bot
-
-# Status
-sudo systemctl status telegram-bot
-```
-
-## Kerakli Shartlar
-
-### Backend API ishlamoqda bo'lishi kerak
-
-```bash
-# Backend'ni ishga tushirish
 cd /home/ubuntu/proj/education/backend
-
-# Virtual environment yaratish
 python3 -m venv venv
 source venv/bin/activate
-
-# Dependencies o'rnatish
 pip install -r requirements.txt
+python run.py
+# http://localhost:8000
+```
 
-# Database yaratish (agar kerak bo'lsa)
-# PostgreSQL ishlamoqda bo'lishi kerak
+#### Telegram Bot
+```bash
+cd /home/ubuntu/proj/education/telegram-bot
+npm install
+npm start
+```
 
-# Backend'ni ishga tushirish
+## 📍 Portlar
+
+- **Frontend**: http://localhost:5000
+- **Backend API**: http://localhost:8000
+- **API Docs**: http://localhost:8000/docs
+- **Database**: localhost:5432
+
+## 🔍 Telegram Bot Tekshirish
+
+```bash
+cd /home/ubuntu/proj/education
+./scripts/check-bot.sh
+```
+
+Bu skript quyidagilarni tekshiradi:
+- Token mavjudligi
+- Backend API ulanishi
+- Dependencies
+- Log fayllar
+
+## 🐛 Bot Muammolari
+
+### Bot ishlamayapti
+
+1. **Token tekshirish:**
+```bash
+cd /home/ubuntu/proj/education/telegram-bot
+cat .env | grep TELEGRAM_BOT_TOKEN
+```
+
+2. **Backend API tekshirish:**
+```bash
+curl http://localhost:8000/health
+```
+
+3. **Log'larni ko'rish:**
+```bash
+cd /home/ubuntu/proj/education/telegram-bot
+tail -f logs/combined.log
+tail -f logs/error.log
+```
+
+4. **Botni qayta ishga tushirish:**
+```bash
+cd /home/ubuntu/proj/education/telegram-bot
+npm start
+```
+
+### Backend ulanmayapti
+
+1. Backend ishlayotganini tekshiring:
+```bash
+curl http://localhost:8000/health
+```
+
+2. Backend'ni ishga tushiring:
+```bash
+cd /home/ubuntu/proj/education/backend
 python run.py
 ```
 
-Backend `http://localhost:8000` da ishlashi kerak.
+3. Docker orqali:
+```bash
+docker-compose up backend
+```
 
-## Botni Tekshirish
-
-1. Telegram'da botni toping
-2. `/start` buyrug'ini yuboring
-3. Bot javob berishi kerak
-
-## Bot Buyruqlari
+## 📱 Bot Buyruqlari
 
 - `/start` - Botni ishga tushirish
 - `/signup username email password first_name last_name` - Ro'yxatdan o'tish
 - `/signin username password` - Kirish
 - `/courses` - Kurslar ro'yxati
 
-## Xatoliklar
+## 🌐 Web Sayt
 
-### Bot ishlamayapti
+Frontend endi **5000 portda** ishlaydi:
+- http://localhost:5000 - Asosiy sahifa
+- http://localhost:5000/signup - Ro'yxatdan o'tish
+- http://localhost:5000/signin - Kirish
+- http://localhost:5000/dashboard - Dashboard (login kerak)
+
+## 🔧 Systemd Service (Production)
+
 ```bash
-# Log'larni ko'rish
-cd /home/ubuntu/proj/education/telegram-bot
-cat logs/combined.log
-cat logs/error.log
+# Telegram Bot service
+sudo cp /home/ubuntu/proj/education/telegram-bot.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl start telegram-bot
+sudo systemctl enable telegram-bot
+sudo systemctl status telegram-bot
 ```
 
-### Backend ulanmayapti
-- Backend ishlayotganini tekshiring: `curl http://localhost:8000/health`
-- API_URL to'g'riligini tekshiring
-
-### Token xatosi
-- Token to'g'riligini tekshiring
-- .env faylda TELEGRAM_BOT_TOKEN mavjudligini tekshiring
-
-## Production Deployment
-
-1. Systemd service yaratish (yuqorida)
-2. Log rotation sozlash
-3. Monitoring qo'shish
-4. Auto-restart sozlash
-
-## Foydali Buyruqlar
+## 📊 Foydali Buyruqlar
 
 ```bash
-# Docker orqali botni ko'rish
+# Docker log'larni ko'rish
+docker-compose logs -f frontend
+docker-compose logs -f backend
 docker-compose logs -f telegram-bot
 
-# Botni qayta ishga tushirish
+# Servislarni qayta ishga tushirish
+docker-compose restart frontend
+docker-compose restart backend
 docker-compose restart telegram-bot
 
-# Botni to'xtatish
-docker-compose stop telegram-bot
+# Servislarni to'xtatish
+docker-compose stop
 
-# Botni o'chirish
-docker-compose down telegram-bot
+# Servislarni o'chirish
+docker-compose down
 ```
 
+## ✅ Tekshirish
+
+1. **Frontend**: http://localhost:5000 ochilishi kerak
+2. **Backend**: http://localhost:8000/docs - API dokumentatsiya
+3. **Telegram Bot**: Telegram'da `/start` buyrug'ini yuboring

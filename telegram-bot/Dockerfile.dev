@@ -1,0 +1,21 @@
+# Telegram Bot Dockerfile - Development
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install dependencies
+COPY package*.json ./
+RUN npm install
+
+# Copy application code
+COPY . .
+
+# Create logs directory
+RUN mkdir -p logs
+
+# Expose port (if needed)
+# EXPOSE 3000
+
+# Run bot in development mode
+CMD ["npm", "run", "dev"]
+
