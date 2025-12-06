@@ -1,12 +1,12 @@
 # Education Platform
 
-Professional education platform - katta va kengaytiriladigan loyiha.
+Professional education platform - katta va kengaytiriladigan loyiha. Monorepo struktura bilan barcha platformalar uchun.
 
 ## 📁 Struktura
 
 ```
 education/
-├── frontend/          # Frontend application (React/Next.js)
+├── frontend/          # Web Application (React/Next.js)
 │   ├── src/
 │   │   ├── components/    # Reusable components
 │   │   ├── pages/         # Page components
@@ -31,6 +31,40 @@ education/
 │   ├── middleware/   # Custom middleware
 │   └── utils/        # Utility functions
 │
+├── telegram-bot/     # Telegram Bot Application
+│   ├── src/
+│   │   ├── commands/     # Bot commands
+│   │   ├── handlers/     # Message handlers
+│   │   ├── services/     # Business logic
+│   │   ├── middleware/   # Middleware
+│   │   └── utils/        # Utilities
+│   └── config/           # Configuration
+│
+├── desktop/          # Desktop Application (Electron)
+│   ├── src/
+│   │   ├── components/    # React components
+│   │   ├── utils/         # Utilities
+│   │   ├── services/      # API services
+│   │   └── store/         # State management
+│   ├── public/            # Electron main process
+│   └── resources/         # Icons, assets
+│
+├── mobile/           # Mobile Application (React Native)
+│   ├── src/
+│   │   ├── screens/       # App screens
+│   │   ├── components/    # Reusable components
+│   │   ├── navigation/    # Navigation config
+│   │   ├── services/      # API services
+│   │   ├── store/         # State management
+│   │   └── utils/         # Utilities
+│   └── assets/            # Images, fonts
+│
+├── shared/           # Shared code across platforms
+│   ├── types/         # TypeScript types
+│   ├── utils/         # Shared utilities
+│   ├── constants/     # Shared constants
+│   └── api/           # Shared API client
+│
 ├── database/         # Database related files
 │   ├── migrations/   # Database migrations
 │   └── seeds/        # Seed data
@@ -48,27 +82,75 @@ education/
 
 ## 🚀 Boshlash
 
-### Frontend
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-### Backend
+### Backend (API)
 ```bash
 cd backend
 pip install -r requirements.txt
 python manage.py runserver
 ```
 
+### Web Application
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### Telegram Bot
+```bash
+cd telegram-bot
+npm install
+npm start
+```
+
+### Desktop Application
+```bash
+cd desktop
+npm install
+npm run dev
+```
+
+### Mobile Application
+```bash
+cd mobile
+npm install
+npm run android  # yoki npm run ios
+```
+
+### Docker (Barcha servislar)
+```bash
+docker-compose up -d
+```
+
 ## 🛠️ Texnologiyalar
 
-- **Frontend**: React/Next.js, TypeScript, Tailwind CSS
-- **Backend**: Django/FastAPI/Node.js
-- **Database**: PostgreSQL/MySQL
+### Backend
+- **Framework**: Django/FastAPI/Node.js
+- **Database**: PostgreSQL
+- **Testing**: Pytest, Jest
+
+### Frontend (Web)
+- **Framework**: Next.js/React
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
 - **State Management**: Redux/Zustand
-- **Testing**: Jest, Pytest
+
+### Telegram Bot
+- **Framework**: node-telegram-bot-api
+- **Language**: JavaScript/TypeScript
+- **Logging**: Winston
+
+### Desktop
+- **Framework**: Electron
+- **Frontend**: React
+- **Language**: TypeScript
+- **Build**: electron-builder
+
+### Mobile
+- **Framework**: React Native
+- **Language**: TypeScript
+- **Navigation**: React Navigation
+- **State Management**: Redux Toolkit
 
 ## 📝 Development Guidelines
 

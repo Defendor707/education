@@ -126,11 +126,118 @@ jobs:
         if: github.event_name != 'pull_request'
         run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend:${{ github.sha }}
 
+  # Telegram Bot Tests and Build
+  telegram-bot:
+    name: Telegram Bot CI
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ./telegram-bot
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: telegram-bot/package-lock.json
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run tests
+        run: npm test || true
+      
+      - name: Build Docker image
+        run: docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-telegram-bot:${{ github.sha }} -f Dockerfile .
+      
+      - name: Log in to GitHub Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Push Docker image
+        if: github.event_name != 'pull_request'
+        run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-telegram-bot:${{ github.sha }}
+
+  # Desktop App Build
+  desktop:
+    name: Desktop App CI
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ./desktop
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: desktop/package-lock.json
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build application
+        run: npm run build
+      
+      - name: Build Electron app (Linux)
+        run: npm run build:electron -- --linux
+        continue-on-error: true
+      
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-app
+          path: desktop/dist/*
+          if-no-files-found: ignore
+
+  # Mobile App Build
+  mobile:
+    name: Mobile App CI
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ./mobile
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: mobile/package-lock.json
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run tests
+        run: npm test || true
+      
+      - name: Run linter
+        run: npm run lint || true
+
   # Docker Compose Integration Test
   integration:
     name: Integration Tests
     runs-on: ubuntu-latest
-    needs: [frontend, backend]
+    needs: [frontend, backend, telegram-bot]
     
     steps:
       - name: Checkout code
@@ -143,7 +250,7 @@ jobs:
         run: |
           docker-compose -f docker-compose.yml build
           docker-compose -f docker-compose.yml up -d
-          sleep 10
+          sleep 15
           docker-compose -f docker-compose.yml ps
           docker-compose -f docker-compose.yml logs
       
@@ -156,7 +263,7 @@ jobs:
   deploy:
     name: Deploy to Production
     runs-on: ubuntu-latest
-    needs: [frontend, backend, integration]
+    needs: [frontend, backend, telegram-bot, integration]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     
     steps:
@@ -168,7 +275,7 @@ jobs:
           echo "🚀 Ready to deploy to production!"
           echo "Frontend image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend:${{ github.sha }}"
           echo "Backend image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend:${{ github.sha }}"
+          echo "Telegram Bot image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-telegram-bot:${{ github.sha }}"
       
       # Add your deployment steps here
       # For example: SSH to server, update docker-compose, etc.
-

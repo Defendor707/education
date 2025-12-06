@@ -33,7 +33,7 @@ services:
     networks:
       - education_network
 
-  # Frontend
+  # Frontend (Web)
   frontend:
     build:
       context: ./frontend
@@ -50,6 +50,21 @@ services:
       - /app/node_modules
     networks:
       - education_network
+
+  # Telegram Bot
+  telegram-bot:
+    build:
+      context: ./telegram-bot
+      dockerfile: Dockerfile
+    container_name: education_telegram_bot
+    environment:
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      API_URL: http://backend:8000/api
+    depends_on:
+      - backend
+    networks:
+      - education_network
+    restart: unless-stopped
 
 volumes:
   postgres_data:

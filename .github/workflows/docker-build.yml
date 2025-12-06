@@ -21,7 +21,7 @@ jobs:
     
     strategy:
       matrix:
-        service: [frontend, backend]
+        service: [frontend, backend, telegram-bot]
     
     steps:
       - name: Checkout code
