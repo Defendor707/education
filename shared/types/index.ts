@@ -16,10 +16,29 @@ export interface User {
   id: number;
   username: string;
   email: string;
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   role: 'student' | 'instructor' | 'admin';
-  createdAt: string;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface SignUpData {
+  username: string;
+  email: string;
+  password: string;
+  first_name: string;
+  last_name: string;
+}
+
+export interface SignInData {
+  username: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  access_token: string;
+  token_type: string;
 }
 
 export interface Lesson {

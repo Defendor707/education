@@ -10,9 +10,10 @@ export const startCommand = async (bot, msg) => {
 🎓 Education Platform'ga xush kelibsiz!
 
 Quyidagi buyruqlardan foydalaning:
+/signup - Ro'yxatdan o'tish
+/signin - Kirish
 /courses - Kurslar ro'yxati
 /help - Yordam
-/about - Platforma haqida
   `;
 
   try {
