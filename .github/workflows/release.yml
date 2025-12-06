@@ -1,0 +1,33 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Create release notes
+        run: |
+          echo "## 🚀 Education Platform Release" >> release_notes.md
+          echo "" >> release_notes.md
+          echo "### Docker Images" >> release_notes.md
+          echo "- Frontend: \`ghcr.io/${{ github.repository }}-frontend:${{ github.ref_name }}\`" >> release_notes.md
+          echo "- Backend: \`ghcr.io/${{ github.repository }}-backend:${{ github.ref_name }}\`" >> release_notes.md
+          echo "" >> release_notes.md
+          echo "### Deployment" >> release_notes.md
+          echo "\`\`\`bash" >> release_notes.md
+          echo "docker pull ghcr.io/${{ github.repository }}-frontend:${{ github.ref_name }}" >> release_notes.md
+          echo "docker pull ghcr.io/${{ github.repository }}-backend:${{ github.ref_name }}" >> release_notes.md
+          echo "\`\`\`" >> release_notes.md
+      
+      - name: Display release notes
+        run: cat release_notes.md
+

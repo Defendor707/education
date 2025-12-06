@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # Database
+  db:
+    image: postgres:15-alpine
+    container_name: education_db
+    environment:
+      POSTGRES_DB: education_db
+      POSTGRES_USER: education_user
+      POSTGRES_PASSWORD: education_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - education_network
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: education_backend
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://education_user:education_password@db:5432/education_db
+    depends_on:
+      - db
+    volumes:
+      - ./backend:/app
+    networks:
+      - education_network
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: education_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - education_network
+
+volumes:
+  postgres_data:
+
+networks:
+  education_network:
+    driver: bridge
+
