@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { getCurrentUser, getToken, removeToken } from '../services/auth';
 import type { User } from '../services/auth';
+import Sidebar from '../components/Sidebar';
 import styles from '../styles/Dashboard.module.css';
 
 export default function Dashboard() {
@@ -10,6 +11,7 @@ export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     const token = getToken();
@@ -74,10 +76,22 @@ export default function Dashboard() {
         <meta name="description" content="Education Platform Dashboard" />
       </Head>
       <div className={styles.container}>
+        {/* Sidebar */}
+        <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+
         {/* Header */}
         <header className={styles.header}>
           <div className={styles.headerContent}>
-            <h1 className={styles.logo}>🎓 Education Platform</h1>
+            <div className={styles.headerLeft}>
+              <button 
+                className={styles.menuButton}
+                onClick={() => setSidebarOpen(true)}
+                aria-label="Menu"
+              >
+                <span className={styles.menuIcon}>☰</span>
+              </button>
+              <h1 className={styles.logo}>🎓 Education Platform</h1>
+            </div>
             <div className={styles.userInfo}>
               <span className={styles.userName}>{user.first_name} {user.last_name}</span>
               <button onClick={handleLogout} className={styles.logoutButton}>
